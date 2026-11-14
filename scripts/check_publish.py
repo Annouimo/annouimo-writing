@@ -63,7 +63,7 @@ def main():
         publish = meta.get("publish")
         if publish is None or publish.lower() == "false":
             continue
-        if publish != "true":
+        if publish != "true" or re.search(r"^publish:\\s*[\\\"\x27]", data.decode("utf-8-sig"), re.MULTILINE):
             errors.append(f"{path}: publish 必须是 YAML 布尔值 true 或 false（不能加引号）")
             continue
         if meta.get("draft", "").lower() == "true":
