@@ -1,0 +1,4 @@
+#!/bin/sh
+# Run the same read-only check in GUI clients and terminals.
+ROOT=$(git rev-parse --show-toplevel) || exit 1
+exec python3 "$ROOT/scripts/check_publish.py"
