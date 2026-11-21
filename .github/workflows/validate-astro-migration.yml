@@ -35,6 +35,13 @@ jobs:
         run: |
           python -m pip install 'PyYAML>=6,<7'
           python scripts/import-writing.py ../writing
+          python - <<'PY'
+          from pathlib import Path
+          p = next(Path('src/content/writing').rglob('why-we-need-derivatives.md'))
+          text = p.read_text()
+          start = text.find(r'\\begin{array}')
+          print(repr(text[start-80:start+250]))
+          PY
           npm ci
           npm run build
       - uses: actions/upload-artifact@v4
