@@ -36,9 +36,10 @@ jobs:
           python -m pip install 'PyYAML>=6,<7' fonttools brotli
           mkdir -p public/fonts
           curl -fL 'https://www.tsanger.cn/download/%E4%BB%93%E8%80%B3%E4%BB%8A%E6%A5%B702-W04.ttf' -o /tmp/tsanger-jinkai-02.ttf
-          pyftsubset /tmp/tsanger-jinkai-02.ttf --output-file=public/fonts/tsanger-jinkai-02.woff2 --flavor=woff2 --unicodes='U+0020-024F,U+2000-206F,U+3000-303F,U+3400-4DBF,U+4E00-9FFF,U+F900-FAFF,U+FF00-FFEF'
-          curl -fL 'https://raw.githubusercontent.com/JetBrains/JetBrainsMono/19371302b95d218af43299bce79ddbddd0bc364d/fonts/webfonts/JetBrainsMono-Regular.woff2' -o public/fonts/jetbrains-mono-regular.woff2
           python scripts/import-writing.py ../writing
+          python -c 'from pathlib import Path; files=Path("src/content/writing").rglob("*.md"); text="".join(p.read_text(encoding="utf-8") for p in files); Path("/tmp/reading-font-text.txt").write_text(text, encoding="utf-8")'
+          pyftsubset /tmp/tsanger-jinkai-02.ttf --output-file=public/fonts/tsanger-jinkai-02.woff2 --flavor=woff2 --unicodes='U+0020-024F,U+2000-206F,U+3000-303F,U+F900-FAFF,U+FF00-FFEF' --text-file=/tmp/reading-font-text.txt
+          curl -fL 'https://raw.githubusercontent.com/JetBrains/JetBrainsMono/19371302b95d218af43299bce79ddbddd0bc364d/fonts/webfonts/JetBrainsMono-Regular.woff2' -o public/fonts/jetbrains-mono-regular.woff2
           npm ci
           npm run build:preview
       - uses: actions/upload-artifact@v4
