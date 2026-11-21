@@ -33,7 +33,11 @@ jobs:
       - name: Import and build
         working-directory: site
         run: |
-          python -m pip install 'PyYAML>=6,<7'
+          python -m pip install 'PyYAML>=6,<7' fonttools brotli
+          mkdir -p public/fonts
+          curl -fL 'https://www.tsanger.cn/download/%E4%BB%93%E8%80%B3%E4%BB%8A%E6%A5%B702-W04.ttf' -o /tmp/tsanger-jinkai-02.ttf
+          pyftsubset /tmp/tsanger-jinkai-02.ttf --output-file=public/fonts/tsanger-jinkai-02.woff2 --flavor=woff2 --unicodes='U+0020-024F,U+2000-206F,U+3000-303F,U+3400-4DBF,U+4E00-9FFF,U+F900-FAFF,U+FF00-FFEF'
+          curl -fL 'https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-fl6H8W6Qp8mW6q8w.woff2' -o public/fonts/jetbrains-mono-regular.woff2
           python scripts/import-writing.py ../writing
           npm ci
           npm run build:preview
