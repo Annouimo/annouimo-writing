@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: Annouimo/annouimo-publishing
-          ref: e840f949ca9df666d2220b36e1485649c432d7b5
+          ref: 6a4cdcb7f13069be56fc9e72aae708028acdd781
           path: site
           persist-credentials: false
       - uses: actions/setup-node@v4
@@ -37,7 +37,7 @@ jobs:
           mkdir -p public/fonts
           curl -fL 'https://www.tsanger.cn/download/%E4%BB%93%E8%80%B3%E4%BB%8A%E6%A5%B702-W04.ttf' -o /tmp/tsanger-jinkai-02.ttf
           pyftsubset /tmp/tsanger-jinkai-02.ttf --output-file=public/fonts/tsanger-jinkai-02.woff2 --flavor=woff2 --unicodes='U+0020-024F,U+2000-206F,U+3000-303F,U+3400-4DBF,U+4E00-9FFF,U+F900-FAFF,U+FF00-FFEF'
-          curl -fL 'https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-fl6H8W6Qp8mW6q8w.woff2' -o public/fonts/jetbrains-mono-regular.woff2
+          curl -fL 'https://raw.githubusercontent.com/JetBrains/JetBrainsMono/19371302b95d218af43299bce79ddbddd0bc364d/fonts/webfonts/JetBrainsMono-Regular.woff2' -o public/fonts/jetbrains-mono-regular.woff2
           python scripts/import-writing.py ../writing
           npm ci
           npm run build:preview
