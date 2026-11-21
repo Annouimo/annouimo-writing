@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: Annouimo/annouimo-publishing
-          ref: c783d70e3d3d57c4068bf941801eb9e567926b2b
+          ref: e840f949ca9df666d2220b36e1485649c432d7b5
           path: site
           persist-credentials: false
       - uses: actions/setup-node@v4
