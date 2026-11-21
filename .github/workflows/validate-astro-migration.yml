@@ -1,0 +1,43 @@
+name: Validate Astro migration
+
+on:
+  push:
+    branches: [migration/astro]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: writing
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: Annouimo/annouimo-publishing
+          ref: 22f785f18bb6709dab710e26d4a67a6b64c8149f
+          path: site
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Import and build
+        working-directory: site
+        run: |
+          python -m pip install 'PyYAML>=6,<7'
+          python scripts/import-writing.py ../writing
+          npm ci
+          npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: astro-migration-site
+          path: site/.cloudflare/output/v0/workers/default/assets/
+          if-no-files-found: error
+          retention-days: 3
