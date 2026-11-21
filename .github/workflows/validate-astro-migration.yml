@@ -36,7 +36,7 @@ jobs:
           python -m pip install 'PyYAML>=6,<7'
           python scripts/import-writing.py ../writing
           npm ci
-          npm run build
+          npm run build:preview
       - uses: actions/upload-artifact@v4
         with:
           name: astro-preview-site
