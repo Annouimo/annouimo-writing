@@ -1,18 +1,12 @@
-# 自动发布配置
+# 写作站点发布
 
-推送 `main` 后，GitHub Actions 会读取本仓库，并从私有的 `Annouimo/annouimo-blog` 获取 Hugo 工程。只有文章 Front Matter 中 `publish: true`（布尔值）的文章才会发布；`draft: true` 仍然阻止发布。缺少 publish 的文件不会公开。
+本仓库保存写作原稿；站点构建在独立的 `Annouimo/annouimo-publishing` 仓库中完成。发布脚本只导入 Front Matter 中 `publish: true` 且未标为草稿的文章。
 
-## 首次设置
+## 预览
 
-在 **Annouimo-writing → Settings → Secrets and variables → Actions** 配置：
+`migration/astro` 分支的 GitHub Actions 会检出固定版本的 Astro 站点，导入本分支已发布文章并构建静态资源，供预览发布使用。写作仓库中的旧 Hugo 生产工作流已退役，不会再部署生产页面。
 
-- `BLOG_REPO_TOKEN`：有权读取私有 `Annouimo/annouimo-blog` 的细粒度 GitHub PAT（该仓库 Contents: Read）。
-- `CLOUDFLARE_API_TOKEN`：有权限部署对应 Worker 的 Cloudflare API Token。
-- `CLOUDFLARE_ACCOUNT_ID`：Cloudflare 账户 ID。
-
-**未配置密钥前，自动部署不会成功。** 请先配置，再在 Actions → Publish blog 手动触发一次，检查构建与部署结果。
-
-## 发布约定
+## 文章约定
 
 ```yaml
 ---
@@ -23,10 +17,6 @@ publish: true
 ---
 ```
 
-栏目由顶层目录决定：`随笔 → blog`、`研究 → research`、`个人经历 → about`、`社会 → society`。新目录若要发布，须先在博客工程的 `deploy/sync_config.toml` 添加映射。
+栏目由顶层目录决定：`随笔 → blog`、`研究 → research`、`个人经历 → about`、`社会 → society`。缺失或重复的 slug、缺失图片、无法转换的 Obsidian 链接会让构建失败。为避免意外公开，图片只允许位于当前文章目录或其子目录。
 
-发布流程只读写作源文件；缺失 slug、重复 slug、缺失图片或无法转换的 Obsidian 链接都会导致部署中止。为了避免意外泄露，图片只允许位于**当前文章所在目录或其子目录**。若多篇文章引用不同目录下的同名图片，也会中止。
-
-GitHub Actions 负责云端校验；本地 pre-commit 只是辅助检查。文章发布后不要随意更改 slug，否则旧链接可能失效。
-
-首次配置前请确认 Hugo 工程的主题、模块、Wrangler 和 Cloudflare 权限可在 GitHub Actions 环境中正常运行。
+已发布文章不要随意更改 slug，否则旧链接可能失效。生产发布由后续独立发布流程负责；预览构建不会部署到生产。
