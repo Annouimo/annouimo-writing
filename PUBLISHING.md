@@ -5,7 +5,7 @@
 ## 日常发布
 
 - 正式博客：<https://blog.annouimo.com/>。
-- `main` 上的文章 Markdown、讲义以外的写作 Markdown和图片有更新时，`.github/workflows/publish-astro.yml` 会自动导入发布内容、读取 Astro 工程当前锁定的讲义和共享样式版本、构建并部署博客。
+- `main` 上的文章 Markdown、讲义以外的写作 Markdown和图片有更新时，`.github/workflows/publish-astro.yml` 会自动导入发布内容、读取 Astro 工程当前锁定的讲义和共享样式版本、构建并通过 Cloudflare CLI 部署博客。
 - 该工作流也可以在 GitHub Actions 中手动运行，供讲义更新后发布。
 
 ## 发布讲义更新
