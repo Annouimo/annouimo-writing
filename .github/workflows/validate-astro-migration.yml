@@ -1,4 +1,5 @@
 name: Validate Astro migration
+# Rebuild isolated preview after typography font subsetting
 
 on:
   push:
