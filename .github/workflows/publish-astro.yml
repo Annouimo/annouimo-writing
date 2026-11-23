@@ -1,0 +1,85 @@
+name: Publish Astro blog
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.md'
+      - '**/*.mdx'
+      - '**/*.png'
+      - '**/*.jpg'
+      - '**/*.jpeg'
+      - '**/*.webp'
+      - '**/*.gif'
+      - '**/*.svg'
+      - '**/*.avif'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: blog-production
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out writing sources
+        uses: actions/checkout@v4
+        with:
+          path: writing
+          persist-credentials: false
+
+      - name: Check out Astro publishing project
+        uses: actions/checkout@v4
+        with:
+          repository: Annouimo/annouimo-publishing
+          ref: main
+          path: publishing
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: publishing/package-lock.json
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install content importer dependency
+        run: python -m pip install 'PyYAML>=6,<7'
+
+      - name: Import writing sources
+        working-directory: publishing
+        run: python scripts/import-writing.py ../writing
+
+      - name: Build production site
+        working-directory: publishing
+        run: |
+          npm ci
+          npm run build
+
+      - name: Set production Worker identity
+        working-directory: publishing
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          config_path = Path('.cloudflare/output/v0/workers/default/worker.config.json')
+          config = json.loads(config_path.read_text())
+          config['name'] = 'annouimo-blog'
+          config['compatibilityDate'] = '2024-03-20'
+          config_path.write_text(json.dumps(config, separators=(',', ':')))
+          PY
+
+      - name: Deploy blog.annouimo.com
+        working-directory: publishing
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: ./node_modules/.bin/cf deploy --prebuilt --message "writing $GITHUB_SHA"

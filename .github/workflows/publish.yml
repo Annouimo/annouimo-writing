@@ -1,58 +1,19 @@
-name: Publish blog
+name: Legacy Hugo publisher (disabled)
 
+# The Hugo site is no longer the source of production releases.
+# Keep this workflow as a visible, harmless stub so the retired path cannot
+# overwrite the Astro site if somebody manually selects it in Actions.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
-concurrency:
-  group: blog-production
-  cancel-in-progress: false
+permissions:
+  contents: read
 
 jobs:
-  deploy:
+  retired:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
-      - name: Check out writing
-        uses: actions/checkout@v4
-        with:
-          path: writing
-          persist-credentials: false
-      - name: Check out private Hugo project
-        uses: actions/checkout@v4
-        with:
-          repository: Annouimo/annouimo-blog
-          token: ${{ secrets.BLOG_REPO_TOKEN }}
-          path: blog
-          persist-credentials: false
-          submodules: recursive
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install parser
-        run: python -m pip install 'PyYAML>=6,<7'
-      - name: Check Python syntax
-        run: python -m compileall -q blog/deploy
-      - name: Prepare publishable content
-        run: python blog/deploy/cloud_publish.py --source writing
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: blog/site/go.mod
-      - name: Set up Hugo
-        uses: peaceiris/actions-hugo@v3
-        with:
-          hugo-version: latest
-          extended: true
-      - name: Build Hugo
-        working-directory: blog/site
-        run: hugo --gc --minify --cleanDestinationDir
-      - name: Deploy Cloudflare Worker
-        working-directory: blog
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx --yes wrangler@4 deploy
+      - name: Explain the retired publisher
+        run: |
+          echo "This Hugo publishing workflow is retired."
+          echo "Use the Astro publishing workflow after reviewing its preview."
